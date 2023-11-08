@@ -1,0 +1,200 @@
+# import re for findall, you are NOT required to use findall,
+# but it makes things easier
+import re
+# other imports here
+
+
+# -------------------------------------------------------------------
+# DO NOT CHANGE THESE FUNCTIONS
+# YOU MAY USE (CALL) THESE FUNCTIONS FROM YOUR OWN FUNCTIONS (later in the file)
+
+def slurp(filename):
+    """
+    Reads the entire file into a list that contains the lines of each file.
+    :param filename: the name of the file to read.
+    :return: a list containing one element for each line in the file
+    """
+    with open(filename, 'r') as infile:
+        return [line.rstrip() for line in infile.readlines()]
+
+
+def gem_word_value(word):
+    """
+    Returns the Gematric value of a word, where a and A = 1, b and B = 2, etc.
+    :param word: the word to compute the gematric value.
+    :return: the Gematric value of a word, where a and A = 1, b and B = 2, etc.
+
+    See gematria function below for more details.
+    """
+
+    # gem_letter_value is a nested helper function,
+    # only gem_word_value can call it
+    def gem_letter_value(c):
+        """Return the Gematric value for a character."""
+        c = c.lower()
+        return ord(c) - ord("a") + 1
+
+    word = word.strip()  # throw away newline
+    return sum([gem_letter_value(c) for c in word])
+
+
+# END DO NOT CHANGE SECTION
+# -------------------------------------------------------------------
+
+
+# FROM HERE DOWN ARE THE FUNCTIONS YOU MUST IMPLEMENT
+def vowel_count(word):
+    """
+    Returns the number of vowels in a word (including y).
+    :param word: the word to search for vowels
+
+    >>> vc = vowel_count('Harry')
+    >>> vc
+    2
+    >>> vc = vowel_count('HAIRY')
+    >>> vc
+    3
+    """
+    # replace pass below with your code
+    vowles = ['a', 'e', 'i', 'o', 'u', 'y', 'A', 'E', 'I', 'O', 'U', 'Y']
+    count = 0
+
+    for letter in word:
+        if letter in vowles:
+            count += 1
+
+    return count
+
+def syllable_count(word):
+    """
+    Returns the number of syllables in the word.
+    For this exercise, assume that syllables are determined as follows:
+       Each sequence of vowels a e i o u y, except for the last e in a word, is a vowel.
+       However, if that algorithm yields a count of 0, change it to 1.
+
+    :param word: the word whose syllables are being counted.
+
+    >>> sc = syllable_count('Harry')
+    >>> sc
+    2
+    >>> sc = syllable_count('HAIRY')
+    >>> sc
+    2
+    >>> sc = syllable_count('hare')
+    >>> sc
+    1
+    >>> sc = syllable_count('the')
+    >>> sc
+    1
+    """
+    # replace pass below with your code
+    vowles = ['a', 'e', 'i', 'o', 'u', 'y', 'A', 'E', 'I', 'O', 'U', 'Y']
+    count = 0
+
+    for letter in word:
+        if letter in vowles:
+            if letter == 'a' or letter == 'A':
+                count += 1
+            elif letter == 'e' or letter == 'E':
+                if previous_letter != 'a' or previous_letter == 'A':
+                    if previous_letter not in vowles:
+                        count += 1
+            elif letter == 'i' or letter == 'I':
+                if previous_letter != 'e' or previous_letter != 'E':
+                    if previous_letter not in vowles:
+                        count += 1
+            elif letter == 'o' or letter == 'O':
+                if previous_letter != 'i' or previous_letter != 'I':
+                    if previous_letter not in vowles:
+                        count += 1
+            elif letter == 'u' or letter == 'U':
+                if previous_letter != 'o' or previous_letter != 'O':
+                    if previous_letter not in vowles:
+                        count += 1
+            elif letter == 'y' or letter == 'Y':
+                if previous_letter != 'u' or previous_letter != 'U':
+                    if previous_letter not in vowles:
+                        count += 1
+
+        previous_letter = letter
+
+    if 'e' == word[-1]:
+        count -= 1
+
+    if count == 0:
+        count = 1
+
+    return count
+
+def filter_dict(filename, min, max):
+    """
+    From the specified dictionary file containing 1 word per line,
+    return a list of words whose lengths are within the user-specified
+    bounds. So for instance, if the min is 3 and max is 7,
+    then only words with length >= 3 and length <= 7 will be
+    returned in the list.
+
+    :param filename: the dictionary file containing 1 word per line
+    :param min: the min length (inclusive) of words to return
+    :param max: the max length (inclusive) of words to return
+
+    >>> fd = filter_dict('small_dict.txt', 3, 5)
+    >>> fd
+    ['acted', 'bios', 'coder', 'find', 'gore', 'knife', 'racer']
+
+    >>> fd = filter_dict('small_dict.txt', 7, 10)
+    >>> fd
+    ['debased', 'shameful']
+    """
+    # replace pass below with your code
+    list = slurp(filename)
+    final_list = []
+
+    for item in list:
+        if len(item) >= min and len(item) <= max:
+            final_list.append(item)
+
+    return final_list
+
+
+def gematria(word_to_match, filename):
+    """
+    Takes a word and the name of a dictionary file, and then
+    returns (a list of) all the entries from the dictionary that
+    Gematrically match the given word.
+
+    "Gematria is the act of assigning numeric values to letters in an
+     alphabet"
+       -- (https://en.wikipedia.org/wiki/Gematria,
+        last access 10/7/2017).
+    Once each letter is assigned a value you can compute the value of
+    a word or phrase by simply summing the values of each letter in
+    the word/phrase. Using a mapping of a=1, b=2, c=3, ..., z=26,
+    "Phil" has a value of P=16 + h=8 + i=9 + l=12 == 45.
+    Note that the case of a letter does not change its value.
+
+    :param word_to_match: the word for which you are trying to find a Gematric match
+    :param filename: the dictionary file containing other candidate words
+
+    >>> g = gematria('Phil', 'small_dict.txt')
+    >>> g
+    ['bios', 'coder', 'gore', 'knife', 'racer']
+    """
+    # replace pass below with your code
+    list = slurp(filename)
+    final_list = []
+    match = gem_word_value(word_to_match)
+
+    for item in list:
+        match_to = gem_word_value(item)
+        if match == match_to:
+            final_list.append(item)
+
+    return final_list
+
+
+# if running from IDLE,
+# uncomment the lines below to run the doctests
+#if __name__ == "__main__":
+#    import doctest
+#    doctest.testmod()
